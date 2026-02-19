@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: rpm_postgres
+    environment:
+      POSTGRES_USER: rpm_user
+      POSTGRES_PASSWORD: rpm_password
+      POSTGRES_DB: rpm_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - rpm_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rpm_user -d rpm_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db_test:
+    image: postgres:16-alpine
+    container_name: rpm_postgres_test
+    environment:
+      POSTGRES_USER: rpm_user
+      POSTGRES_PASSWORD: rpm_password
+      POSTGRES_DB: rpm_db_test
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rpm_user -d rpm_db_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rpm_postgres_data:
