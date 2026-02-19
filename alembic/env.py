@@ -13,13 +13,17 @@ from app.models import Respondent, Study, ScreenerCriteria, StudyAssignment
 
 config = context.config
 
-# Override sqlalchemy.url from environment variable if available
+# Get DATABASE_URL from environment (required for production)
 database_url = os.getenv("DATABASE_URL")
 if database_url:
     # Convert postgresql:// to postgresql+asyncpg:// for Railway/Render
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    config.set_main_option("sqlalchemy.url", database_url)
+else:
+    # Fallback for local development
+    database_url = "postgresql+asyncpg://rpm_user:rpm_password@localhost:5434/rpm_db"
+
+config.set_main_option("sqlalchemy.url", database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
